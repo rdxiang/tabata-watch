@@ -57,25 +57,27 @@ public class MyActivity extends Activity {
 
 
                 // Set settings here?
-                numIntervals = 1;
-                WorkSeconds = 2 * 1000;
-                RestSeconds = 1 * 1000;
+                numIntervals = 8;
+                WorkSeconds = 20 * 1000;
+                RestSeconds = 10 * 1000;
 
 
                 //Set Up notifications!
 
-                // Build intent for notification content
-                Intent viewIntent = new Intent(getApplicationContext() , NotificationActvity.class);
-                //viewIntent.putExtra(EXTRA_EVENT_ID, eventId);
-                PendingIntent viewPendingIntent =
-                        PendingIntent.getActivity(getApplicationContext(), 0, viewIntent, 0);
+                // Create an intent to restart a timer.
+                Intent restartIntent = new Intent("cancel", null, getApplicationContext(),
+                        MyActivity.class);
+                PendingIntent pendingIntentRestart = PendingIntent
+                        .getService(getApplicationContext(), 0, restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
 
                 mNotificationBuilder =
                         new NotificationCompat.Builder(getApplicationContext())
                                 .setSmallIcon(R.drawable.ic_launcher)
                                 .setContentTitle("Get Ready!")
                                 .setContentText("Why are you looking at me?")
-                               ;
+                                .addAction(R.drawable.ic_cc_alarm, "Cancel",
+                                    pendingIntentRestart);
 
                 // Get an instance of the NotificationManager service
                 mNotificationManager =
