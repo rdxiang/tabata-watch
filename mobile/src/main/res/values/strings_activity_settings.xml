@@ -1,0 +1,21 @@
+<resources>
+        <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_intervals">Number of Work/Rest Intervals</string>
+    <string name="pref_default_intervals">8</string>
+
+    <string name="pref_title_work">Length of Work (seconds)</string>
+    <string name="pref_default_work">20</string>
+
+    <string name="pref_title_rest">Length of Rest (seconds)</string>
+    <string name="pref_default_rest"> 10</string>
+
+
+
+
+</resources>

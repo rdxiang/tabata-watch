@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TabataTimer</string>
+    <string name="instructions"> Welcome to Tabata Wear</string>
+    <string name="instructions_para"> This app is meant to let you time your tabata intervals directly
+            your android wear watch. Modify the default settings here or start the app directly on your watch. </string>
+
+    <string name="action_settings">Settings</string>
+
+</resources>

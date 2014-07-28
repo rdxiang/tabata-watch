@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TabataTimer</string>
+    <string name="hello_round">Hello Round World!</string>
+    <string name="hello_square">Hello Square World!</string>
+    <string name="loading">Get Ready!</string>
+    <string name="title_activity_notification_actvity">NotificationActvity</string>
+
+</resources>
