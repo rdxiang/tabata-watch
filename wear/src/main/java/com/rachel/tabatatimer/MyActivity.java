@@ -65,11 +65,12 @@ public class MyActivity extends Activity {
                 //Set Up notifications!
 
                 // Create an intent to restart a timer.
-                Intent restartIntent = new Intent("cancel", null, getApplicationContext(),
+                Intent restartIntent = new Intent(getApplicationContext(),
                         MyActivity.class);
+
+             restartIntent.putExtra("action", "restart");
                 PendingIntent pendingIntentRestart = PendingIntent
                         .getService(getApplicationContext(), 0, restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
 
                 mNotificationBuilder =
                         new NotificationCompat.Builder(getApplicationContext())
@@ -83,18 +84,20 @@ public class MyActivity extends Activity {
                 mNotificationManager =
                         NotificationManagerCompat.from(getApplicationContext());
 
-
                 workTimer(1);
-
-
-
-
             }
         });
 
 
     }
 
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        Log.d("TABATA", "NEW INTENT");
+    }
 
     private void workTimer (final int interval) {
         mNotificationManager.cancel(2);
