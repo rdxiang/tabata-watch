@@ -21,7 +21,7 @@ import android.widget.TextView;
 
 
 public class MyActivity extends Activity {
-    public final  String log = "TABATA";
+    public final String log = "TABATA";
 
 
     private TextView mTextView;
@@ -31,10 +31,9 @@ public class MyActivity extends Activity {
     private int RestSeconds;
     private Vibrator v;
 
-    private AltCountDownTimer mWorkTimer;
-    private AltCountDownTimer mRestTimer;
+    private static AltCountDownTimer mWorkTimer;
+    private static AltCountDownTimer mRestTimer;
     private boolean mCancelSelected = false;
-    private int mInterval = 0;
 
     private NotificationManagerCompat mNotificationManager;
     private NotificationCompat.Builder mNotificationBuilder;
@@ -49,9 +48,25 @@ public class MyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-       mCancelSelected = intent.getBooleanExtra("cancel", false);
+        mCancelSelected = intent.getBooleanExtra("cancel", false);
         Log.v("TABATA", "wtf" + mCancelSelected);
 
+        if (mCancelSelected) {
+            Log.v("TABATA", "Cancel is TRUE");
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancelAll();
+            if (mWorkTimer != null)
+                mWorkTimer.cancel();
+            if (mRestTimer != null)
+                mRestTimer.cancel();
+            finish();
+
+            Log.v("TABATA", "omg how are you runningg????");
+            return;
+
+        }
+        Log.v("TABATA", "Cancel is FALSE");
 
         setContentView(R.layout.activity_my);
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
@@ -65,13 +80,13 @@ public class MyActivity extends Activity {
 
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 int intervals = sharedPreferences.getInt("intervals", 1);
-                Log.v(log, "" +intervals);
+                Log.v(log, "" + intervals);
 
 
                 // Set settings here?
                 numIntervals = 8;
-                WorkSeconds = 20 * 1000;
-                RestSeconds = 10 * 1000;
+                WorkSeconds = 5 * 1000;
+                RestSeconds = 5 * 1000;
 
 
                 //Set Up notifications!
@@ -82,7 +97,7 @@ public class MyActivity extends Activity {
 
                 restartIntent.putExtra("cancel", true);
                 PendingIntent pendingIntentRestart = PendingIntent
-                        .getActivity(getApplicationContext(), 0, restartIntent, PendingIntent.FLAG_NO_CREATE);
+                        .getActivity(getApplicationContext(), 0, restartIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 Resources res = getResources();
                 mNotificationBuilder =
@@ -91,76 +106,13 @@ public class MyActivity extends Activity {
                                 .setContentTitle("Get Ready!")
                                 .setContentText("Why are you looking at me?")
                                 .addAction(R.drawable.ic_cc_alarm, "Cancel",
-                                    pendingIntentRestart);
+                                        pendingIntentRestart);
 
                 // Get an instance of the NotificationManager service
                 mNotificationManager =
                         NotificationManagerCompat.from(getApplicationContext());
 
-
-                mWorkTimer =  new AltCountDownTimer(WorkSeconds, 1000) {
-
-                    public void onTick(long millisUntilFinished) {
-                        //stuff inside app  no one looks at...
-                        mLinearLayout.setBackgroundColor(Color.parseColor("#27ae60"));
-                        mTextView.setText("work for:  " + millisUntilFinished / 1000);
-                    }
-                    public void onFinish() {
-                            mTextView.setText("Done!");
-                                restTimer();
-                    }
-                };
-
-                mRestTimer =   new AltCountDownTimer(RestSeconds, 1000) {
-
-                    public void onTick(long millisUntilFinished) {
-                        mLinearLayout.setBackgroundColor(Color.parseColor("#8e44ad"));
-                        mTextView.setText("seconds remaining: " + millisUntilFinished / 1000);
-
-                    }
-
-                    public void onFinish() {
-                            workTimer();
-                    }
-
-                };
-
-
-
-                if (mCancelSelected) {
-                    Log.v("TABATA", "Cancel is TRUE");
-
-                    NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-                    notificationManager.cancelAll();
-                    if (mWorkTimer != null) {
-
-                        mWorkTimer.cancel();
-                    }
-                    else
-                        Log.v("TABATA", "wtf work nill" );
-
-                    if (mRestTimer != null) {
-
-                        mRestTimer.cancel();
-                    }else
-                        Log.v("TABATA", "wtf rest null" );
-
-
-                    finish();
-
-                    Log.v("TABATA", "omg how are you runningg????");
-
-                    android.os.Process.killProcess(android.os.Process.myPid());
-
-                    return;
-
-                }
-                Log.v("TABATA", "Cancel is FALSE");
-
-
-
-
-                workTimer();
+                workTimer(1);
             }
         });
 
@@ -177,32 +129,42 @@ public class MyActivity extends Activity {
 
     }
 
-    private void workTimer () {
-        mInterval++;
+    private void workTimer(final int interval) {
         mNotificationManager.cancel(2);
-
-
+        if (mCancelSelected) return;
         Log.v("TABATA", "omg how are you runningg???? " + mCancelSelected);
 
         Resources res = getResources();
         mNotificationBuilder
                 .setVibrate(mDefaultVibrate)
                 .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.green))
-                .setContentTitle("WORK. " + mInterval + " of " + numIntervals)
+                .setContentTitle("WORK. " + interval + " of " + numIntervals)
                 .setUsesChronometer(true)
                 .setWhen(System.currentTimeMillis() + WorkSeconds);
         mNotificationManager.notify(1, mNotificationBuilder.build());
 
+        mWorkTimer = new AltCountDownTimer(WorkSeconds, 1000) {
+            public void onTick(long millisUntilFinished) {
+                //stuff inside app  no one looks at...
+                mLinearLayout.setBackgroundColor(Color.parseColor("#27ae60"));
+                mTextView.setText("work for:  " + millisUntilFinished / 1000);
+            }
 
-        mWorkTimer.start();
+            public void onFinish() {
+                if (!mCancelSelected) {
+                    mTextView.setText("Done!");
+                    if (interval < numIntervals)
+                        restTimer(interval);
+                    else
+                        endScreen();
+                } else
+                    return;
+            }
+        }.start();
     }
 
-    private void restTimer () {
+    private void restTimer(final int interval) {
         mNotificationManager.cancel(1);
-        if (mInterval == numIntervals)
-        { endScreen();
-            return;}
-
         if (mCancelSelected) return;
         Log.v("TABATA", "omg how are you runningg???? " + mCancelSelected);
 
@@ -212,15 +174,28 @@ public class MyActivity extends Activity {
                 .setUsesChronometer(true)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.purple))
 
-                .setContentTitle("REST. " + mInterval + " of " + numIntervals)
+                .setContentTitle("REST. " + interval + " of " + numIntervals)
                 .setWhen(System.currentTimeMillis() + RestSeconds);
         mNotificationManager.notify(2, mNotificationBuilder.build());
 
+        mRestTimer = new AltCountDownTimer(RestSeconds, 1000) {
+            public void onTick(long millisUntilFinished) {
+                mLinearLayout.setBackgroundColor(Color.parseColor("#8e44ad"));
+                mTextView.setText("seconds remaining: " + millisUntilFinished / 1000);
 
-        mRestTimer.start();
+            }
+
+            public void onFinish() {
+                if (!mCancelSelected)
+                    workTimer(interval + 1);
+                else
+                    return;
+            }
+
+        }.start();
     }
 
-    private void endScreen(){
+    private void endScreen() {
         mNotificationManager.cancelAll();
         mLinearLayout.setBackgroundColor(Color.BLUE);
         mTextView.setText("GOOD JOB!");
@@ -234,9 +209,6 @@ public class MyActivity extends Activity {
 
         finish();
     }
-
-
-
 
 
 }
