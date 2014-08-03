@@ -1,27 +1,24 @@
-package com.rachel.tabatatimer;
+package com.rachel.tabatawear;
 
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.view.WatchViewStub;
-import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
 public class MyActivity extends Activity {
-    public final String log = "TABATA";
+    public final String TAG = "TABATA";
 
 
     private TextView mTextView;
@@ -49,24 +46,20 @@ public class MyActivity extends Activity {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         mCancelSelected = intent.getBooleanExtra("cancel", false);
-        Log.v("TABATA", "wtf" + mCancelSelected);
+
 
         if (mCancelSelected) {
-            Log.v("TABATA", "Cancel is TRUE");
-
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancelAll();
             if (mWorkTimer != null)
                 mWorkTimer.cancel();
             if (mRestTimer != null)
                 mRestTimer.cancel();
-            finish();
 
-            Log.v("TABATA", "omg how are you runningg????");
+            finish();
             return;
 
         }
-        Log.v("TABATA", "Cancel is FALSE");
 
         setContentView(R.layout.activity_my);
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
@@ -78,19 +71,13 @@ public class MyActivity extends Activity {
                 v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
 
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                int intervals = sharedPreferences.getInt("intervals", 1);
-                Log.v(log, "" + intervals);
-
-
                 // Set settings here?
                 numIntervals = 8;
-                WorkSeconds = 5 * 1000;
-                RestSeconds = 5 * 1000;
+                WorkSeconds = 20 * 1000;
+                RestSeconds = 10 * 1000;
 
 
                 //Set Up notifications!
-
                 // Create an intent to restart a timer.
                 Intent restartIntent = new Intent(getApplicationContext(),
                         MyActivity.class);
@@ -119,20 +106,9 @@ public class MyActivity extends Activity {
 
     }
 
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        Log.d("TABATA", "NEW INTENT");
-
-
-    }
-
     private void workTimer(final int interval) {
         mNotificationManager.cancel(2);
         if (mCancelSelected) return;
-        Log.v("TABATA", "omg how are you runningg???? " + mCancelSelected);
 
         Resources res = getResources();
         mNotificationBuilder
@@ -166,8 +142,6 @@ public class MyActivity extends Activity {
     private void restTimer(final int interval) {
         mNotificationManager.cancel(1);
         if (mCancelSelected) return;
-        Log.v("TABATA", "omg how are you runningg???? " + mCancelSelected);
-
 
         mNotificationBuilder
                 .setVibrate(mDefaultVibrate)
@@ -204,6 +178,7 @@ public class MyActivity extends Activity {
                 .setContentText("Gold star for you.")
                 .setUsesChronometer(false)
                 .setVibrate(mSuccessVibrate);
+
         // Build the notification and issues it with notification manager.
         mNotificationManager.notify(3, mNotificationBuilder.build());
 

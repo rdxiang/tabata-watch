@@ -1,4 +1,4 @@
-package com.rachel.tabatatimer;
+package com.rachel.tabatawear;
 
 import android.annotation.TargetApi;
 import android.content.Context;

@@ -3,6 +3,6 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
-        android:fragment="com.rachel.tabatatimer.SettingsActivity$GeneralPreferenceFragment"
+        android:fragment="com.rachel.tabatawear.SettingsActivity$GeneralPreferenceFragment"
         android:title="@string/pref_header_general" />
 </preference-headers>

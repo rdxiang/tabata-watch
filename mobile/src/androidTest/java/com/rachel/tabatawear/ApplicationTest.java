@@ -1,4 +1,4 @@
-package com.rachel.tabatatimer;
+package com.rachel.tabatawear;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

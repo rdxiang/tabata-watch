@@ -1,4 +1,4 @@
-package com.rachel.tabatatimer;
+package com.rachel.tabatawear;
 
 /*
  * Copyright (C) 2008 The Android Open Source Project
