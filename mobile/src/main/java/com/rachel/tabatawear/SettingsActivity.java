@@ -2,7 +2,9 @@ package com.rachel.tabatawear;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -11,7 +13,14 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.MenuItem;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.Wearable;
 
 import java.util.List;
 
@@ -35,11 +44,39 @@ public class SettingsActivity extends PreferenceActivity {
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
 
+    static final String TAG = "MOBIlE- settings";
+
+    private static GoogleApiClient mGoogleApiClient;
+    private static Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = getApplicationContext();
+//        startService(new Intent(com.rachel.tabatawear.))
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle connectionHint) {
+                        Log.d(TAG, "connected");
+                    }
+                    @Override
+                    public void onConnectionSuspended(int cause) {
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(ConnectionResult result) {
+                    }
+                })
+                .addApi(Wearable.API)
+                .build();
+        mGoogleApiClient.connect();
         setupActionBar();
+
     }
+
+
+
 
     /**
      * Set up the {@link android.app.ActionBar}, if the API is available.
@@ -165,6 +202,8 @@ public class SettingsActivity extends PreferenceActivity {
                 // simple string representation.
                 preference.setSummary(stringValue);
             }
+            syncSampleDataItem();
+
             return true;
         }
     };
@@ -211,7 +250,21 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
 
+    private static void syncSampleDataItem() {
+        if(mGoogleApiClient==null)
+            return;
+        SharedPreferences preferences =  PreferenceManager.getDefaultSharedPreferences(mContext);
+         PutDataMapRequest putRequest = PutDataMapRequest.create("/SAMPLE");
+         DataMap map = putRequest.getDataMap();
+        Log.d("MOBLE", preferences.getString("rest_seconds","10"));
 
+        map.putString("rest", preferences.getString("rest_seconds","10"));
+        map.putString("work", preferences.getString("work_seconds", "20"));
+        map.putString("intervals", preferences.getString("intervals", "8"));
+        map.putInt("color", Color.RED);
+        map.putString("string_example", "Sample String");
+        Wearable.DataApi.putDataItem(mGoogleApiClient,  putRequest.asPutDataRequest());
+    }
 
 
 }

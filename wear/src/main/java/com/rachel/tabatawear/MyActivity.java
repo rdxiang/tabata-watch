@@ -6,15 +6,17 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.view.WatchViewStub;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.gms.common.api.GoogleApiClient;
 
 
 public class MyActivity extends Activity {
@@ -23,9 +25,9 @@ public class MyActivity extends Activity {
 
     private TextView mTextView;
     private LinearLayout mLinearLayout;
-    private int numIntervals;
-    private int WorkSeconds;
-    private int RestSeconds;
+    static  private int numIntervals = 8;
+    static private int WorkSeconds = 20;
+    static private int RestSeconds = 10;
     private Vibrator v;
 
     private static AltCountDownTimer mWorkTimer;
@@ -40,12 +42,14 @@ public class MyActivity extends Activity {
     private long[] mSuccessVibrate = {0, 1000, 200, 1000};
     private long[] mNoVibrate = {0};
 
-
+    private GoogleApiClient mGoogleApiClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         mCancelSelected = intent.getBooleanExtra("cancel", false);
+
+       startService(new Intent(this, DataLayerListenerService.class));
 
 
         if (mCancelSelected) {
@@ -70,11 +74,9 @@ public class MyActivity extends Activity {
                 mLinearLayout = (LinearLayout) stub.findViewById(R.id.background);
                 v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-
-                // Set settings here?
-                numIntervals = 8;
-                WorkSeconds = 20 * 1000;
-                RestSeconds = 10 * 1000;
+                //convert things to milliseconds
+                WorkSeconds *= 1000;
+                RestSeconds *= 1000;
 
 
                 //Set Up notifications!
@@ -113,7 +115,7 @@ public class MyActivity extends Activity {
         Resources res = getResources();
         mNotificationBuilder
                 .setVibrate(mDefaultVibrate)
-                .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.green))
+                //.setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.green))
                 .setContentTitle("WORK. " + interval + " of " + numIntervals)
                 .setUsesChronometer(true)
                 .setWhen(System.currentTimeMillis() + WorkSeconds);
@@ -146,7 +148,7 @@ public class MyActivity extends Activity {
         mNotificationBuilder
                 .setVibrate(mDefaultVibrate)
                 .setUsesChronometer(true)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.purple))
+              //  .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.purple))
 
                 .setContentTitle("REST. " + interval + " of " + numIntervals)
                 .setWhen(System.currentTimeMillis() + RestSeconds);
@@ -185,5 +187,18 @@ public class MyActivity extends Activity {
         finish();
     }
 
+    public static void setWorkSeconds(String seconds) {
+        Log.d("main", seconds);
+        WorkSeconds = Integer.parseInt(seconds);
+    }
 
+    public static void setRestSeconds (String seconds) {
+        Log.d("main", seconds);
+        RestSeconds = Integer.parseInt(seconds);
+    }
+
+    public static void setNumIntervals(String intervals)
+    {
+        numIntervals = Integer.parseInt(intervals);
+    }
 }

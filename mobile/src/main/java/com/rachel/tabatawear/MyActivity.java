@@ -2,6 +2,7 @@ package com.rachel.tabatawear;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,6 +13,9 @@ import android.view.ViewGroup;
 
 
 public class MyActivity extends Activity {
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +43,8 @@ public class MyActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-          //  Intent intent = new Intent(this, SettingsActivity.class);
-           // startActivity(intent);
+            Intent intent = new Intent(this, SettingsActivity.class);
+           startActivity(intent);
 
             return true;
         }
