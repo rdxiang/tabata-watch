@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TabataTimer.iml" filepath="$PROJECT_DIR$/TabataTimer.iml" />
       <module fileurl="file://$PROJECT_DIR$/mobile/mobile.iml" filepath="$PROJECT_DIR$/mobile/mobile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tabata-watch.iml" filepath="$PROJECT_DIR$/tabata-watch.iml" />
       <module fileurl="file://$PROJECT_DIR$/wear/wear.iml" filepath="$PROJECT_DIR$/wear/wear.iml" />
     </modules>
   </component>

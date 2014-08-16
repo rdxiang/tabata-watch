@@ -12,19 +12,22 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.view.WatchViewStub;
+import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.gms.common.api.GoogleApiClient;
 
 
 public class MyActivity extends Activity {
     public final String TAG = "TABATA";
 
-
     private TextView mTextView;
     private LinearLayout mLinearLayout;
-    private int numIntervals;
-    private int WorkSeconds;
-    private int RestSeconds;
+
+    static  private int numIntervals = 8;
+    static private int WorkSeconds = 20;
+    static private int RestSeconds = 10;
 
     private static AltCountDownTimer mWorkTimer;
     private static AltCountDownTimer mRestTimer;
@@ -37,12 +40,14 @@ public class MyActivity extends Activity {
     private long[] mDefaultVibrate = {0, 700, 200};
     private long[] mSuccessVibrate = {0, 1000, 200, 1000};
 
-
+    private GoogleApiClient mGoogleApiClient;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         mCancelSelected = intent.getBooleanExtra("cancel", false);
+
+       startService(new Intent(this, DataLayerListenerService.class));
 
 
         if (mCancelSelected) {
@@ -66,11 +71,9 @@ public class MyActivity extends Activity {
                 mTextView = (TextView) stub.findViewById(R.id.text);
                 mLinearLayout = (LinearLayout) stub.findViewById(R.id.background);
 
-
-                // Set settings here?
-                numIntervals = 8;
-                WorkSeconds = 20 * 1000;
-                RestSeconds = 10 * 1000;
+                //convert things to milliseconds
+                WorkSeconds *= 1000;
+                RestSeconds *= 1000;
 
 
                 //Set Up notifications!
@@ -177,5 +180,18 @@ public class MyActivity extends Activity {
         finish();
     }
 
+    public static void setWorkSeconds(String seconds) {
+        Log.d("main", seconds);
+        WorkSeconds = Integer.parseInt(seconds);
+    }
 
+    public static void setRestSeconds (String seconds) {
+        Log.d("main", seconds);
+        RestSeconds = Integer.parseInt(seconds);
+    }
+
+    public static void setNumIntervals(String intervals)
+    {
+        numIntervals = Integer.parseInt(intervals);
+    }
 }
