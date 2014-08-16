@@ -27,7 +27,7 @@ public class MyActivity extends Activity {
     private TextView mTextView;
     private LinearLayout mLinearLayout;
     static  private int numIntervals = 8;
-    static private int WorkSeconds = 40 * 1000;
+    static private int WorkSeconds = 20 * 1000;
     static private int RestSeconds = 10 * 1000;
     private Vibrator v;
 
@@ -48,10 +48,9 @@ public class MyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        mCancelSelected = intent.getBooleanExtra("cancel", false);
-        boolean restart = intent.getBooleanExtra("restart", false);
+        mCancelSelected = intent.getAction().equalsIgnoreCase("cancel");
+        boolean restart = intent.getAction().equalsIgnoreCase("restart");
 
-       startService(new Intent(this, DataLayerListenerService.class));
 
         Log.d(TAG, "cancel, restart = "+ mCancelSelected + " " + restart);
         if (mCancelSelected) {
@@ -64,7 +63,19 @@ public class MyActivity extends Activity {
 
             finish();
             return;
+
         }
+        if (restart)
+        {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancelAll();
+            if (mWorkTimer != null)
+                mWorkTimer.cancel();
+            if (mRestTimer != null)
+                mRestTimer.cancel();
+        }
+
+        startService(new Intent(this, DataLayerListenerService.class));
 
         setContentView(R.layout.activity_my);
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
@@ -78,20 +89,25 @@ public class MyActivity extends Activity {
 
                 //Set Up notifications!
                 // Create an intent to restart a timer.
-                Intent cancelIntent = new Intent(getApplicationContext(),
-                        MyActivity.class);
-
-                cancelIntent.putExtra("cancel", true);
-                PendingIntent pendingIntentCancel = PendingIntent
-                        .getActivity(getApplicationContext(), 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
 
                 Intent restartIntent = new Intent(getApplicationContext(),
                         MyActivity.class);
 
-                restartIntent.putExtra("restart", true);
+                restartIntent.setAction("restart");
                 PendingIntent pendingIntentRestart = PendingIntent
                         .getActivity(getApplicationContext(), 0, restartIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+
+                Intent cancelIntent = new Intent(getApplicationContext(),
+                        MyActivity.class);
+
+                cancelIntent.setAction("cancel");
+                PendingIntent pendingIntentCancel = PendingIntent
+                        .getActivity(getApplicationContext(), 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+
 
 
 
