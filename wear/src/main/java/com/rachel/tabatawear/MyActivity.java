@@ -9,7 +9,6 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.wearable.view.WatchViewStub;
@@ -26,7 +25,6 @@ public class MyActivity extends Activity {
     private int numIntervals;
     private int WorkSeconds;
     private int RestSeconds;
-    private Vibrator v;
 
     private static AltCountDownTimer mWorkTimer;
     private static AltCountDownTimer mRestTimer;
@@ -38,7 +36,6 @@ public class MyActivity extends Activity {
 
     private long[] mDefaultVibrate = {0, 700, 200};
     private long[] mSuccessVibrate = {0, 1000, 200, 1000};
-    private long[] mNoVibrate = {0};
 
 
     @Override
@@ -68,7 +65,6 @@ public class MyActivity extends Activity {
             public void onLayoutInflated(WatchViewStub stub) {
                 mTextView = (TextView) stub.findViewById(R.id.text);
                 mLinearLayout = (LinearLayout) stub.findViewById(R.id.background);
-                v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
 
                 // Set settings here?
@@ -86,7 +82,6 @@ public class MyActivity extends Activity {
                 PendingIntent pendingIntentRestart = PendingIntent
                         .getActivity(getApplicationContext(), 0, restartIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                Resources res = getResources();
                 mNotificationBuilder =
                         new NotificationCompat.Builder(getApplicationContext())
                                 .setSmallIcon(R.drawable.ic_logo)
@@ -133,8 +128,7 @@ public class MyActivity extends Activity {
                         restTimer(interval);
                     else
                         endScreen();
-                } else
-                    return;
+                }
             }
         }.start();
     }
@@ -162,8 +156,6 @@ public class MyActivity extends Activity {
             public void onFinish() {
                 if (!mCancelSelected)
                     workTimer(interval + 1);
-                else
-                    return;
             }
 
         }.start();
