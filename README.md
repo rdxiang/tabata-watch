@@ -1,6 +1,12 @@
 tabata-watch
 ============
 
+<a href="https://play.google.com/store/apps/details?id=com.rachel.tabatatimer">
+  <img alt="Get it on Google Play"
+       src="http://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
+</a>
+
+
 A simple tabata app for Android Wear.
 Currently supports the 'standard' 8 intervals of 20 second work and 10 second rest. Uses notifications on the watch to vibrate when time runs up. Currently working on customizing settings with phone/watch.
 
