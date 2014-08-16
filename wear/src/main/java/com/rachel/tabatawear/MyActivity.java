@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -26,8 +27,8 @@ public class MyActivity extends Activity {
     private TextView mTextView;
     private LinearLayout mLinearLayout;
     static  private int numIntervals = 8;
-    static private int WorkSeconds = 20;
-    static private int RestSeconds = 10;
+    static private int WorkSeconds = 40 * 1000;
+    static private int RestSeconds = 10 * 1000;
     private Vibrator v;
 
     private static AltCountDownTimer mWorkTimer;
@@ -48,10 +49,11 @@ public class MyActivity extends Activity {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         mCancelSelected = intent.getBooleanExtra("cancel", false);
+        boolean restart = intent.getBooleanExtra("restart", false);
 
        startService(new Intent(this, DataLayerListenerService.class));
 
-
+        Log.d(TAG, "cancel, restart = "+ mCancelSelected + " " + restart);
         if (mCancelSelected) {
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.cancelAll();
@@ -62,7 +64,6 @@ public class MyActivity extends Activity {
 
             finish();
             return;
-
         }
 
         setContentView(R.layout.activity_my);
@@ -74,19 +75,26 @@ public class MyActivity extends Activity {
                 mLinearLayout = (LinearLayout) stub.findViewById(R.id.background);
                 v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
-                //convert things to milliseconds
-                WorkSeconds *= 1000;
-                RestSeconds *= 1000;
-
 
                 //Set Up notifications!
                 // Create an intent to restart a timer.
+                Intent cancelIntent = new Intent(getApplicationContext(),
+                        MyActivity.class);
+
+                cancelIntent.putExtra("cancel", true);
+                PendingIntent pendingIntentCancel = PendingIntent
+                        .getActivity(getApplicationContext(), 0, cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
                 Intent restartIntent = new Intent(getApplicationContext(),
                         MyActivity.class);
 
-                restartIntent.putExtra("cancel", true);
+                restartIntent.putExtra("restart", true);
                 PendingIntent pendingIntentRestart = PendingIntent
                         .getActivity(getApplicationContext(), 0, restartIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+
 
                 Resources res = getResources();
                 mNotificationBuilder =
@@ -94,7 +102,9 @@ public class MyActivity extends Activity {
                                 .setSmallIcon(R.drawable.ic_logo)
                                 .setContentTitle("Get Ready!")
                                 .setContentText("Why are you looking at me?")
-                                .addAction(R.drawable.ic_cc_alarm, "Cancel",
+                                .addAction(R.drawable.ic_full_cancel, "Cancel",
+                                        pendingIntentCancel)
+                                .addAction(R.drawable.ic_cc_alarm, "Restart",
                                         pendingIntentRestart);
 
                 // Get an instance of the NotificationManager service
@@ -115,7 +125,7 @@ public class MyActivity extends Activity {
         Resources res = getResources();
         mNotificationBuilder
                 .setVibrate(mDefaultVibrate)
-                //.setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.green))
+                .setLargeIcon(BitmapFactory.decodeResource(res, R.drawable.green))
                 .setContentTitle("WORK. " + interval + " of " + numIntervals)
                 .setUsesChronometer(true)
                 .setWhen(System.currentTimeMillis() + WorkSeconds);
@@ -148,7 +158,7 @@ public class MyActivity extends Activity {
         mNotificationBuilder
                 .setVibrate(mDefaultVibrate)
                 .setUsesChronometer(true)
-              //  .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.purple))
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.purple))
 
                 .setContentTitle("REST. " + interval + " of " + numIntervals)
                 .setWhen(System.currentTimeMillis() + RestSeconds);
@@ -189,12 +199,12 @@ public class MyActivity extends Activity {
 
     public static void setWorkSeconds(String seconds) {
         Log.d("main", seconds);
-        WorkSeconds = Integer.parseInt(seconds);
+        WorkSeconds = Integer.parseInt(seconds) * 1000;
     }
 
     public static void setRestSeconds (String seconds) {
         Log.d("main", seconds);
-        RestSeconds = Integer.parseInt(seconds);
+        RestSeconds = Integer.parseInt(seconds) * 1000;
     }
 
     public static void setNumIntervals(String intervals)

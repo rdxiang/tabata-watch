@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -22,6 +21,7 @@ import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -254,15 +254,16 @@ public class SettingsActivity extends PreferenceActivity {
         if(mGoogleApiClient==null)
             return;
         SharedPreferences preferences =  PreferenceManager.getDefaultSharedPreferences(mContext);
-         PutDataMapRequest putRequest = PutDataMapRequest.create("/SAMPLE");
+         PutDataMapRequest putRequest = PutDataMapRequest.create("/tabata");
          DataMap map = putRequest.getDataMap();
-        Log.d("MOBLE", preferences.getString("rest_seconds","10"));
+
+
+        Log.d("MOBLE", preferences.getString("rest_seconds","cryyyy"));
 
         map.putString("rest", preferences.getString("rest_seconds","10"));
         map.putString("work", preferences.getString("work_seconds", "20"));
         map.putString("intervals", preferences.getString("intervals", "8"));
-        map.putInt("color", Color.RED);
-        map.putString("string_example", "Sample String");
+        map.putLong("time", new Date().getTime()); // MOST IMPORTANT LINE FOR TIMESTAMP
         Wearable.DataApi.putDataItem(mGoogleApiClient,  putRequest.asPutDataRequest());
     }
 

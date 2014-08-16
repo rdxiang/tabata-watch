@@ -27,6 +27,8 @@ public class DataLayerListenerService extends WearableListenerService {
 
     GoogleApiClient mGoogleApiClient;
 
+
+
     @Override
     public void onCreate() {
         Log.v(TAG, "created!!!!!!");
@@ -39,6 +41,9 @@ public class DataLayerListenerService extends WearableListenerService {
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
+
+        Log.d(TAG, "onDataChanged:  wtf " + dataEvents);
+
         Log.d(TAG, "onDataChanged: " + dataEvents);
         final List<DataEvent> events = FreezableUtils.freezeIterable(dataEvents);
         dataEvents.close();
@@ -55,16 +60,16 @@ public class DataLayerListenerService extends WearableListenerService {
         for(DataEvent event : events) {
             final Uri uri = event.getDataItem().getUri();
             final String path = uri!=null ? uri.getPath() : null;
-            if("/SAMPLE".equals(path)) {
+            if("/tabata".equals(path)) {
                 final DataMap map = DataMapItem.fromDataItem(event.getDataItem()).getDataMap();
                 // read your values from map:
-                int color = map.getInt("color");
-                String stringExample = map.getString("string_example");
+
+
                 MyActivity.setNumIntervals(map.getString("intervals"));
                 MyActivity.setRestSeconds(map.getString("rest"));
                 MyActivity.setWorkSeconds(map.getString("work"));
 
-                Log.d("WATCH", stringExample);
+                Log.d("WATCH", map.getString("rest"));
 
             }
         }
