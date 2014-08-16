@@ -1,16 +1,22 @@
 tabata-watch
 ============
-
 <a href="https://play.google.com/store/apps/details?id=com.rachel.tabatatimer">
   <img alt="Get it on Google Play"
        src="http://developer.android.com/images/brand/en_generic_rgb_wo_45.png" />
 </a>
 
-
 A simple tabata app for Android Wear.
-Currently supports the 'standard' 8 intervals of 20 second work and 10 second rest. Uses notifications on the watch to vibrate when time runs up. Currently working on customizing settings with phone/watch.
 
-Screenshots of it at work:
+**What is tabata?**
+Tabata training is a High Intensity Interval Training (H.I.I.T) workout that lasts four minutes.
+
+
+**About the App**
+Time tabatas with Andorid Wear by starting the app (either by clicking it or by saying "Okay Google, Start Tabata Watch") By default, it supports the 'standard' 8 intervals of 20 second work and 10 second rest. Uses notifications on the watch to display vital info and vibrates when time runs up. 
+
+*New!* configure settings from your phone and it'll sync with your watch! Great for custom intervals.
+
+**Screenshots**
 
 ![alt text](https://cloud.githubusercontent.com/assets/5369292/3792062/1635e8da-1b63-11e4-9cf4-71ea1aec04a5.png)
 ![alt text](https://cloud.githubusercontent.com/assets/5369292/3792060/162df35a-1b63-11e4-81c8-3b4aea1e752f.png)
